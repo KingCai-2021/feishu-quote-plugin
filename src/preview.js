@@ -123,7 +123,6 @@ export function generatePreviewHtml(data, linkedItems, sellerConfig, docTitle, s
 '    .vm { vertical-align: middle; }' +
 '    .vt { vertical-align: top; }' +
 '    .logo { position: absolute; top: 6mm; left: 8mm; width: 45px; height: 45px; }' +
-'    .stamp { position: absolute; bottom: 12mm; right: 12mm; width: 70px; height: 70px; opacity: 0.8; }' +
 '  </style>' +
 '</head>' +
 '<body>' +
@@ -205,9 +204,14 @@ export function generatePreviewHtml(data, linkedItems, sellerConfig, docTitle, s
 '      <tr><td colspan="2" style="font-size: 11px;">ACCOUNT</td><td colspan="6" style="font-size: 11px;">' + seller.account + '</td></tr>' +
 '      <tr><td colspan="8" style="height: 4px;"></td></tr>' +
 '      <tr><td colspan="8" style="font-size: 11px;"><span class="red">Note: </span>' + note + '</td></tr>' +
-'      <tr><td colspan="6"></td><td colspan="2" class="tc bold" style="font-size: 11px;">SELLER SIGNATURE</td></tr>' +
+'      <tr>' +
+'        <td colspan="6"></td>' +
+'        <td colspan="2" class="tc" style="padding: 4px 0;">' +
+           (showStamp !== false && stampData ? '<img src="' + stampData + '" alt="Stamp" style="width: 70px; height: 70px; opacity: 0.8; display: block; margin: 0 auto;">' : '') +
+'          <div class="bold" style="font-size: 11px; margin-top: 4px;">SELLER SIGNATURE</div>' +
+'        </td>' +
+'      </tr>' +
 '    </table>' +
-     (showStamp !== false && stampData ? '    <img class="stamp" src="' + stampData + '" alt="Stamp">' : '') +
 '  </div>' +
 '</body>' +
 '</html>';
