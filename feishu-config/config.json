@@ -1,0 +1,11 @@
+{
+  "appId": "YOUR_APP_ID",
+  "appSecret": "YOUR_APP_SECRET",
+  "appType": "gadget",
+  "gadget": {
+    "name": "排版打印插件",
+    "description": "模板设计、数据关联、批量套打",
+    "icon": "icon.png",
+    "version": "1.0.0"
+  }
+}

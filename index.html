@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报价单生成器</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="plugin-header">
+      <h1>📋 合同和报价单生成</h1>
+      <button id="syncBtn" class="btn-sync" title="同步数据">🔄</button>
+    </header>
+
+    <main class="plugin-main">
+      <!-- 模板选择 -->
+      <section class="section">
+        <div class="section-title">
+          <span>文档类型</span>
+        </div>
+        <div class="template-options">
+          <label class="radio-label">
+            <input type="radio" name="docTitle" value="Proforma Invoice" checked>
+            <span>合同 (Proforma Invoice)</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="docTitle" value="Quotation">
+            <span>报价单 (Quotation)</span>
+          </label>
+        </div>
+        <input type="radio" name="templateType" value="builtin" checked style="display:none">
+        <div class="template-upload" id="templateUploadArea" style="display:none;">
+          <div class="upload-area" id="uploadArea">
+            <span class="upload-icon">📄</span>
+            <span id="templateName">点击上传 Excel 模板</span>
+            <input type="file" id="templateInput" accept=".xlsx,.xls" hidden>
+          </div>
+          <button id="clearTemplate" class="btn-icon" style="display:none">✕</button>
+        </div>
+      </section>
+
+      <!-- 字段映射 -->
+      <section class="section section-mapping">
+        <div class="section-title">
+          <span>字段映射</span>
+          <button id="toggleMapping" class="btn-small">展开</button>
+        </div>
+        <div class="mapping-content" id="mappingContent" style="display:none;">
+          <div class="mapping-hint">自动匹配的字段可手动调整，点击"保存映射"记住配置</div>
+          <div class="mapping-list" id="mappingList"></div>
+        </div>
+      </section>
+
+      <!-- Seller 公司配置 -->
+      <section class="section section-mapping">
+        <div class="section-title">
+          <span>Seller 公司信息</span>
+          <button id="toggleSeller" class="btn-small">展开</button>
+        </div>
+        <div class="seller-content" id="sellerContent" style="display:none;">
+          <div class="mapping-hint">设置报价单中 Seller 方的公司信息</div>
+          <div class="seller-form">
+            <div class="seller-row">
+              <label>公司名称</label>
+              <input type="text" id="sellerCompanyName" class="seller-input" value="Guangdong Heli Cutter Technology CO., LTD">
+            </div>
+            <div class="seller-row">
+              <label>公司地址</label>
+              <input type="text" id="sellerAddress" class="seller-input" value="Room 101, Building 2, No. 5 Xinjiqiao South Road, Luciwo, Wanjiang District, Dongguan City, Guangdong Province, China">
+            </div>
+            <div class="seller-row">
+              <label>电话</label>
+              <input type="text" id="sellerTel" class="seller-input" value="0086-15382820881">
+            </div>
+            <div class="seller-row">
+              <label>邮箱</label>
+              <input type="text" id="sellerEmail" class="seller-input" value="marketing@helicutter.com">
+            </div>
+            <div class="seller-row">
+              <label>网站</label>
+              <input type="text" id="sellerWebsite" class="seller-input" value="helicutter.com">
+            </div>
+            <div class="seller-row">
+              <label>收款人</label>
+              <input type="text" id="sellerBeneficiary" class="seller-input" value="GUANGDONG HELI CUTTER TECHNOLOGY CO., LIMITED">
+            </div>
+            <div class="seller-row">
+              <label>银行名称</label>
+              <input type="text" id="sellerBankName" class="seller-input" value="CITIBANK N.A.HONG KONG BRANCH">
+            </div>
+            <div class="seller-row">
+              <label>SWIFT</label>
+              <input type="text" id="sellerSwiftCode" class="seller-input" value="CITIHKHX">
+            </div>
+            <div class="seller-row">
+              <label>银行地址</label>
+              <input type="text" id="sellerBankAddress" class="seller-input" value="Champion Tower THREE Garden ROAD CENTRAL, HONG KONG">
+            </div>
+            <div class="seller-row">
+              <label>账号</label>
+              <input type="text" id="sellerAccount" class="seller-input" value="342581976">
+            </div>
+            <div class="mapping-actions">
+              <button class="btn-mapping" id="saveSellerBtn">💾 保存配置</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 数据选择 -->
+      <section class="section section-data">
+        <div class="section-title">
+          <span>选择数据</span>
+          <span class="data-count" id="dataCount">0 条</span>
+        </div>
+        <div class="data-toolbar">
+          <label class="checkbox-label">
+            <input type="checkbox" id="selectAll">
+            <span>全选</span>
+          </label>
+          <span class="selected-info" id="selectedInfo">已选 0 条</span>
+        </div>
+        <div class="record-list" id="recordList">
+          <div class="empty-hint">点击 🔄 同步数据</div>
+        </div>
+      </section>
+
+      <!-- 输出设置 -->
+      <section class="section" id="outputSection">
+        <div class="section-title">输出设置</div>
+        <div class="output-options">
+          <label class="radio-label">
+            <input type="radio" name="outputMode" value="single" checked>
+            <span>每条数据单独文件 (ZIP)</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="outputMode" value="merge">
+            <span>合并到一个PDF</span>
+          </label>
+        </div>
+        <div class="output-options" style="margin-top: 6px;">
+          <label class="checkbox-label">
+            <input type="checkbox" id="showStamp" checked>
+            <span>显示印章</span>
+          </label>
+          <span class="btn-small" id="uploadStampBtn" style="margin-left: 8px; cursor: pointer;">上传印章</span>
+          <input type="file" id="stampInput" accept="image/*" hidden>
+          <span id="stampStatus" style="font-size: 11px; color: var(--text-secondary); margin-left: 4px;"></span>
+        </div>
+      </section>
+    </main>
+
+    <!-- 操作按钮 -->
+    <footer class="plugin-footer" id="actionFooter">
+      <button id="previewBtn" class="btn btn-secondary" disabled>👁️ 预览</button>
+      <button id="exportBtn" class="btn btn-primary" disabled>📥 导出PDF</button>
+    </footer>
+
+    <!-- 加载 -->
+    <div id="loading" class="loading-overlay" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p id="loadingText">加载中...</p>
+    </div>
+  </div>
+
+  <script type="module" src="src/index.js"></script>
+</body>
+</html>
