@@ -4,3 +4,6 @@ dist/
 *.log
 .env
 .env.local
+portable/
+*.exe
+模板_解压/
